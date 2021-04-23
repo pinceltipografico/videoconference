@@ -1,0 +1,85 @@
+const http = require('http')
+const https = require('https')
+const express = require('express')
+const { Nuxt, Builder } = require('nuxt')
+const passport = require('passport')
+const { Strategy } = require('passport-local')
+const bcrypt = require('bcrypt')
+
+const { models, db, sq } = require('./models')
+const { User } = models
+
+const app = express()
+const host = process.env.HOST || '127.0.0.1'
+const port = process.env.PORT || 3000
+
+const server = http.createServer(app)
+const io = require('socket.io')(server)
+
+app.set('port', port)
+app.set('io', io)
+
+app.use(require('body-parser').json())
+app.use(require('body-parser').urlencoded({ extended: true }))
+
+app.use(require('cookie-session')({
+  name: 'session',
+  secret: '2b7d64523e3cebcfb65351aea3aac269da091b5f8bf8d98901eb700190a93588',
+  maxAge: 21600000
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.serializeUser(function(user, done) { done(null, user) })
+passport.deserializeUser(function(user, done) { done(null, user) })
+
+passport.use(new Strategy({ passReqToCallback: true, session: true },
+  function(req, username, password, done) {
+    return User.findOne({ where: { email: username, user_type: 'admin', active: true }, attributes: ['id', 'email', 'encrypted_password'] }).then(user => {
+      if (user) {
+        return bcrypt.compare(`${password}cc2b1e596d4ddc05ab2f7239c783e637c312fc254d006d1a3b939e00ddc83fd924a7e7d6d3936578280ef36726a654aac8ddb0a9d45e2c4c0f8b7c21176a866e`, user.encrypted_password, function(err, res) {
+          if (res) {
+            const u = { id: user.id, email: user.email }
+            req.session.authUser = u
+            done(null, u)
+          } else {
+            delete req.session.authUser
+            done(null, false)
+          }
+        })
+      } else {
+        delete req.session.authUser
+        done(null, false)
+      }
+    })
+  }
+))
+
+app.all('*', function (req, res, next) {
+  if (
+      req.path.indexOf('/api') === 0 &&
+      req.path.indexOf('/api/login') !== 0 &&
+      req.path.indexOf('/api/logout') !== 0 &&
+      !((req.session.authUser || {}).id)
+    ) {
+    res.status(403).end()
+  } else {
+    next()
+  }
+})
+
+app.use('/api', require('./api'))
+
+// Import and Set Nuxt.js options
+let config = require('../nuxt.config.js')
+config.dev = !(process.env.NODE_ENV === 'production') && !(process.env.NODE_ENV === 'staging')
+
+if (!config.dev) {
+  const nuxt = new Nuxt(config)
+  app.use(nuxt.render)
+}
+
+// Listen the server
+server.listen(port, host)
+console.log('Server listening on ' + host + ':' + port)

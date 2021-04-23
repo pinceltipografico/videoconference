@@ -1,0 +1,112 @@
+@mixin font-size($sizeValue: 1.6, $important:false) {
+  @if ($important == false) {
+    font-size: ($sizeValue * 10) + px;
+    font-size: $sizeValue + rem;
+  } @else {
+    font-size: ($sizeValue * 10) + px !important;
+    font-size: $sizeValue + rem !important;
+  }
+}
+
+@mixin clear() {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+//
+// responsive sizes
+// $sizeKeys: 'small';
+$mobileS: 320px;
+$mobileM: 420px;
+$mobileL: 640px;
+$tablet: 980px;
+$laptopS: 1024px;
+$laptopL: 1280px;
+$laptopXL: 1440px;
+@mixin responsive($break:large, $landscape:false) {
+  //
+  // SMALL PHONES BREAKPOINT
+  @if ($break == mobileS) {
+    @if ($landscape == true) {
+      @media only screen and (max-width: $mobileS) and (min-aspect-ratio: 13/9) {
+        @content;
+      }
+    } @else if ($landscape == false) {
+      @media only screen and (max-width: $mobileS) and (max-aspect-ratio: 13/9) {
+        @content;
+      }
+    }
+  }
+  //
+  // MEDIUM PHONE BREAKPOINT
+  @if ($break == mobileM) {
+    @if ($landscape == true) {
+      @media only screen and (min-width: $mobileS+1) and (max-width: $mobileM) and (min-aspect-ratio: 13/9) {
+        @content;
+      }
+    } @else if ($landscape == false) {
+      @media only screen and (min-width: $mobileS+1) and (max-width: $mobileM) and (max-aspect-ratio: 13/9) {
+        @content;
+      }
+    }
+  }
+
+  //
+  // large phone BREAKPOINT
+  @if ($break == mobileL) {
+    @if ($landscape == true) {
+      @media only screen and (min-width: $mobileM+1) and (max-width: $mobileL) and (min-aspect-ratio: 13/9) {
+        @content;
+      }
+    } @else if ($landscape == false) {
+      @media only screen and (min-width: $mobileM+1) and (max-width: $mobileL) and (max-aspect-ratio: 13/9) {
+        @content;
+      }
+    }
+  }
+
+  //
+  //  TABLET BREAKPOINT
+  @if ($break == tablet) {
+    @if ($landscape == true) {
+      @media only screen and (min-width: $mobileL+1) and (max-width: $tablet) and (min-aspect-ratio: 13/9) {
+        @content;
+      }
+    } @else if ($landscape == false) {
+      @media only screen and (min-width: $mobileL+1) and (max-width: $tablet) and (max-aspect-ratio: 13/9) {
+        @content;
+      }
+    }
+  }
+
+  // LAPTOP 1024
+  @if ($break == laptopS) {
+    @media only screen and (min-width: 600px) and (max-width: $laptopS) {
+      @content;
+    }
+  }
+
+  // LAPTOP 1280
+  @if ($break == laptopL) {
+    @media only screen and (min-width: $laptopS+1) and (max-width: $laptopL) {
+      @content;
+    }
+  }
+
+  // LAPTOP 1366
+  @if ($break == laptopXL) {
+    @media only screen and (min-width: $laptopL+1) and (max-width: $laptopXL) {
+      @content;
+    }
+  }
+
+  // LAPTOP 1366
+  @if ($break == xLarge) {
+    @media only screen and (min-width: $laptopXL+1) {
+      @content;
+    }
+  }
+}

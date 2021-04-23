@@ -1,0 +1,7 @@
+.nuxt
+.vscode
+dist
+build
+node_modules
+npm-debug.log
+sw.*

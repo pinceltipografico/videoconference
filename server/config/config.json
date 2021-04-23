@@ -1,0 +1,36 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "",
+    "database": "",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "timezone": "America/Sao_Paulo"
+  },
+  "staging": {
+    "username": "frame3",
+    "password": "",
+    "database": "frame3",
+    "host": "",
+    "dialect": "postgres",
+    "timezone": "America/Sao_Paulo",
+    "tokbox": {
+      "apiKey": "",
+      "apiSecret": ""
+    }
+  },
+  "production": {
+    "database": {
+      "username": "",
+      "password": "",
+      "database": "",
+      "host": "",
+      "dialect": "postgres",
+      "timezone": "America/Sao_Paulo"
+    },
+    "tokbox": {
+      "apiKey": "",
+      "apiSecret": ""
+    }
+  }
+}
